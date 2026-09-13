@@ -17,4 +17,3 @@ gradle/wrapper/gradle-wrapper.jar
 repomix-output.xml
 .idea/deploymentTargetSelector.xml
 .idea/vcs.xml
-*.zip
