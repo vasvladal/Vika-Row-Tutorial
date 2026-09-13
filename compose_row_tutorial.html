@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jetpack Compose: Row — обучающее руководство</title>
+<style>
+  :root {
+    --bg: #f7f7f9;
+    --card: #ffffff;
+    --text: #1a1a2e;
+    --muted: #555;
+    --accent: #3ddc84;
+    --accent-dark: #1a8f52;
+    --code-bg: #1e1e2e;
+    --code-text: #e4e4e7;
+    --border: #e2e2e8;
+    --warn: #fff4e5;
+    --warn-border: #ffb74d;
+    --tip: #e7f5ee;
+    --tip-border: #3ddc84;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    font-size: 16px;
+  }
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px 20px 80px;
+  }
+  header {
+    background: linear-gradient(135deg, #1a8f52, #3ddc84);
+    color: white;
+    padding: 40px 20px;
+    border-radius: 12px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+  header h1 { margin: 0 0 8px; font-size: 28px; }
+  header p { margin: 0; opacity: 0.95; }
+  h2 {
+    margin-top: 40px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--accent);
+    color: var(--accent-dark);
+    font-size: 24px;
+  }
+  h3 { margin-top: 28px; font-size: 19px; color: #333; }
+  h4 { margin-top: 20px; font-size: 17px; color: #444; }
+  p, li { color: #2a2a3a; }
+  code {
+    background: #ececf1;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "JetBrains Mono", Consolas, Monaco, monospace;
+    font-size: 0.9em;
+    color: #b3005e;
+  }
+  .code-block {
+    position: relative;
+    margin: 16px 0;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  }
+  .code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #2a2a3e;
+    color: #c8c8d8;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-family: "JetBrains Mono", Consolas, monospace;
+  }
+  .code-header .lang { color: #3ddc84; font-weight: 600; }
+  .copy-btn {
+    background: #3ddc84;
+    color: #1a1a2e;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+  .copy-btn:hover { background: #56e69a; }
+  .copy-btn.copied { background: #56e69a; }
+  pre {
+    margin: 0;
+    padding: 16px 18px;
+    background: var(--code-bg);
+    color: var(--code-text);
+    overflow-x: auto;
+    font-family: "JetBrains Mono", Consolas, Monaco, monospace;
+    font-size: 13.5px;
+    line-height: 1.6;
+    tab-size: 4;
+  }
+  pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+  .callout {
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin: 18px 0;
+    border-left: 4px solid;
+  }
+  .callout.tip { background: var(--tip); border-color: var(--tip-border); }
+  .callout.warn { background: var(--warn); border-color: var(--warn-border); }
+  .callout strong { display: block; margin-bottom: 4px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14.5px;
+  }
+  th { background: #f0f0f5; font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  .toc {
+    background: var(--card);
+    padding: 20px 24px;
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    margin-bottom: 24px;
+  }
+  .toc h3 { margin-top: 0; }
+  .toc ol { margin: 0; padding-left: 22px; }
+  .toc a { color: var(--accent-dark); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 14px;
+    text-align: center;
+  }
+  ul.checklist { list-style: none; padding-left: 0; }
+  ul.checklist li::before { content: "✅ "; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>Jetpack Compose: компонент Row</h1>
+  <p>Пошаговое руководство: от создания проекта до всех сценариев использования Row</p>
+</header>
+
+<div class="toc">
+  <h3>Содержание</h3>
+  <ol>
+    <li><a href="#step1">Создание проекта в Android Studio</a></li>
+    <li><a href="#step2">Нужно ли менять файлы для Compose?</a></li>
+    <li><a href="#step3">Что уже настроено в вашем проекте</a></li>
+    <li><a href="#step4">Добавление Row в проект</a></li>
+    <li><a href="#step5">Что можно поместить в Row</a></li>
+    <li><a href="#step6">Пример: Row с TextField, IconButton и Button</a></li>
+    <li><a href="#step7">Решение ошибки Unresolved reference 'icons'</a></li>
+    <li><a href="#step8">Все сценарии использования Row</a></li>
+    <li><a href="#step9">Чек-лист и советы</a></li>
+  </ol>
+</div>
+
+<!-- ============================================================= -->
+<h2 id="step1">1. Создание проекта в Android Studio</h2>
+
+<p>При создании проекта в визарде выберите:</p>
+<ul>
+  <li><strong>Шаблон:</strong> <code>Empty Activity</code> (вкладка Phone and Tablet)</li>
+  <li><strong>Язык:</strong> Kotlin (единственный вариант для Compose)</li>
+  <li><strong>Minimum SDK:</strong> API 21 или выше</li>
+  <li><strong>Build configuration language:</strong> Kotlin DSL (<code>build.gradle.kts</code>)</li>
+</ul>
+
+<div class="callout tip">
+  <strong>💡 Почему Empty Activity?</strong>
+  Это официально рекомендованная точка входа для новых Compose-проектов. Шаблон уже включает все зависимости Compose и Material 3.
+</div>
+
+<!-- ============================================================= -->
+<h2 id="step2">2. Нужно ли менять файлы для Compose?</h2>
+
+<p><strong>Нет, ничего менять не нужно.</strong> Если проект создан через шаблон <code>Empty Activity</code>, Android Studio сразу генерирует проект с уже настроенным Compose. Менять Gradle-файлы не требуется.</p>
+
+<!-- ============================================================= -->
+<h2 id="step3">3. Что уже настроено в вашем проекте</h2>
+
+<h3>3.1. <code>app/build.gradle.kts</code></h3>
+<p>Плагин Compose уже подключён:</p>
+
+<div class="code-block">
+  <div class="code-header"><span class="lang">kotlin</span><button class="copy-btn">Копировать</button></div>
+<pre><code>plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.compose)
+}
+
+android {
+    // ...
+    buildFeatures {
+        compose = true
+    }
+}</code></pre>
+</div>
+
+<div class="callout warn">
+  <strong>⚠️ Важно для новых версий AGP (9.x) и Kotlin (2.2+)</strong>
+  Отдельный блок <code>composeOptions { kotlinCompilerExtensionVersion = ... }</code> больше не нужен — его заменил плагин <code>org.jetbrains.kotlin.plugin.compose</code>.
+</div>
+
+<h3>3.2. <code>gradle/libs.versions.toml</code></h3>
+<p>Все библиотеки Compose на месте:</p>
+
+<div class="code-block">
+  <div class="code-header"><span class="lang">toml</span><button class="copy-btn">Копировать</button></div>
+<pre><code>[versions]
+composeBom = "2026.02.01"
+kotlin = "2.2.10"
+
+[libraries]
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }</code></pre>
+</div>
+
+<div class="callout tip">
+  <strong>💡 Что такое Compose BOM?</strong>
+  «Список согласованных версий». Указываете одну версию BOM — все библиотеки Compose подтягиваются в совместимых между собой версиях.
+</div>
+
+<h3>3.3. <code>MainActivity.kt</code> — точка входа в Compose</h3>
+
+<div class="code-block">
+  <div class="code-header"><span class="lang">kotlin</span><button class="copy-btn">Копировать</button></div>
+<pre><code>class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            VikaRowTutorialTheme {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    Greeting(
+                        name = "Android",
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun Greeting(name: String, modifier: Modifier = Modifier) {
+    Text(text = "Hello $name!", modifier = modifier)
+}</code></pre>
+</div>
+
+<h3>3.4. Итоговая таблица</h3>
+<table>
+  <tr><th>Файл</th><th>Что делать</th></tr>
+  <tr><td><code>app/build.gradle.kts</code></td><td>✅ Уже настроен</td></tr>
+  <tr><td><code>gradle/libs.versions.toml</code></td><td>✅ Уже настроен</td></tr>
+  <tr><td><code>settings.gradle.kts</code></td><td>✅ Уже настроен</td></tr>
+  <tr><td><code>MainActivity.kt</code></td><td>✅ Уже использует Compose</td></tr>
+  <tr><td><code>themes.xml</code></td><td>✅ Оставить как есть</td></tr>
+  <tr><td>Остальные ресурсы</td><td>✅ Не трогать</td></tr>
+</table>
+
+<!-- ============================================================= -->
+<h2 id="step4">4. Добавление Row в проект</h2>
+
+<p>Заменяем содержимое <code>MainActivity.kt</code> на пример с Row. Остальные файлы проекта менять не нужно.</p>
+
+<div class="code-block">
+  <div class="code-header"><span class="lang">kotlin — app/src/main/java/com/example/vika_row_tutorial/MainActivity.kt</span><button class="copy-btn">Копировать</button></div>
+<pre><code>package com.example.vika_row_tutorial
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.example.vika_row_tutorial.ui.theme.VikaRowTutorialTheme
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            VikaRowTutorialTheme {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    RowTutorial(
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Обучающий пример использования компонента Row.
+ *
+ * Row — это контейнер, который размещает дочерние элементы
+ * ГОРИЗОНТАЛЬНО (слева направо).
+ *
+ * Аналог в старом XML: LinearLayout с android:orientation="horizontal".
+ */
+@Composable
+fun RowTutorial(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        // ===== Пример 1: базовый Row =====
+        Text(
+            text = "1. Базовый Row (прижат к началу)",
+            style = MaterialTheme.typography.titleMedium
+        )
+        Row {
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .background(Color.Red, RoundedCornerShape(8.dp))
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .background(Color.Green, RoundedCornerShape(8.dp))
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .background(Color.Blue, RoundedCornerShape(8.dp))
+            )
+        }
+
+        // ===== Пример 2: SpaceEvenly =====
+        Text(
+            text = "2. Arrangement.SpaceEvenly",
+            style = MaterialTheme.typography.titleMedium
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .background(Color.Red, RoundedCornerShape(8.dp))
+            )
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .background(Color.Green, RoundedCornerShape(8.dp))
+            )
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .background(Color.Blue, RoundedCornerShape(8.dp))
+            )
+        }
+
+        // ===== Пример 3: SpaceBetween =====
+        Text(
+            text = "3. Arrangement.SpaceBetween",
+            style = MaterialTheme.typography.titleMedium
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .background(Color.Red, RoundedCornerShape(8.dp))
+            )
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .background(Color.Green, RoundedCornerShape(8.dp))
+            )
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .background(Color.Blue, RoundedCornerShape(8.dp))
+            )
+        }
+
+        // ===== Пример 4: выравнивание по вертикали =====
+        Text(
+            text = "4. verticalAlignment = CenterVertically",
+            style = MaterialTheme.typography.titleMedium
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(Color.Red, RoundedCornerShape(8.dp))
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Box(
+                modifier = Modifier
+                    .size(80.dp)
+                    .background(Color.Green, RoundedCornerShape(8.dp))
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .background(Color.Blue, RoundedCornerShape(8.dp))
+            )
+        }
+
+        // ===== Пример 5: weight =====
+        Text(
+            text = "5. Modifier.weight() — пропорции 2 : 1",
+            style = MaterialTheme.typography.titleMedium
+        )
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Box(
+                modifier = Modifier
+                    .weight(2f)
+                    .height(60.dp)
+                    .background(Color.Red, RoundedCornerShape(8.dp))
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(60.dp)
+                    .background(Color.Blue, RoundedCornerShape(8.dp))
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun RowTutorialPreview() {
+    VikaRowTutorialTheme {
+        RowTutorial()
+    }
+}</code></pre>
+</div>
+
+<h3>Что изменилось в файле</h3>
+<table>
+  <tr><th>Что</th><th>Было</th><th>Стало</th></tr>
+  <tr><td>Функция</td><td><code>Greeting(name, modifier)</code></td><td><code>RowTutorial(modifier)</code></td></tr>
+  <tr><td>Импорты</td><td>Базовые</td><td>Добавлены Row, Box, Column, Spacer, Arrangement, Alignment, Color и др.</td></tr>
+  <tr><td>Preview</td><td><code>GreetingPreview()</code></td><td><code>RowTutorialPreview()</code></td></tr>
+  <tr><td>В setContent</td><td><code>Greeting(...)</code></td><td><code>RowTutorial(...)</code></td></tr>
+</table>
+
+<!-- ============================================================= -->
+<h2 id="step5">5. Что можно поместить в Row</h2>
+
+<p>В <code>Row</code> можно поместить практически любой UI-компонент Compose:</p>
+
+<h4>🧱 Базовые контейнеры</h4>
+<ul>
+  <li><code>Box</code> — точное позиционирование / наложение</li>
+  <li><code>Column</code> — вертикальная группа внутри горизонтального ряда</li>
+  <li><code>Spacer</code> — пустое пространство</li>
+</ul>
+
+<h4>📝 Отображение контента</h4>
+<ul>
+  <li><code>Text</code> — текстовая информация</li>
+  <li><code>Image</code> — изображения</li>
+  <li><code>Icon</code> — иконки</li>
+</ul>
+
+<h4>👆 Взаимодействие</h4>
+<ul>
+  <li><code>Button</code> / <code>OutlinedButton</code> / <code>TextButton</code></li>
+  <li><code>IconButton</code></li>
+  <li><code>Checkbox</code> / <code>Switch</code> / <code>RadioButton</code></li>
+  <li><code>TextField</code> / <code>OutlinedTextField</code></li>
+</ul>
+
+<h4>📋 Продвинутые</h4>
+<ul>
+  <li><code>LazyRow</code> — горизонтальный список с ленивой загрузкой</li>
+  <li><code>TopAppBar</code> / <code>BottomAppBar</code></li>
+</ul>
+
+<div class="callout warn">
+  <strong>⚠️ Важный нюанс</strong>
+  Параметры <code>verticalAlignment</code> и <code>horizontalArrangement</code> применяются ко <strong>всем</strong> дочерним элементам сразу. Чтобы прижать только один элемент, используйте <code>Spacer</code> с <code>Modifier.weight(1f)</code>.
+</div>
+
+<!-- ============================================================= -->
+<h2 id="step6">6. Пример: Row с TextField, IconButton и Button</h2>
+
+<p>Полный рабочий пример — три контрола одновременно в одном Row.</p>
+
+<div class="code-block">
+  <div class="code-header"><span class="lang">kotlin — MainActivity.kt (полная замена)</span><button class="copy-btn">Копировать</button></div>
+<pre><code>package com.example.vika_row_tutorial
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.example.vika_row_tutorial.ui.theme.VikaRowTutorialTheme
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            VikaRowTutorialTheme {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    SearchRowExample(
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Пример Row с тремя типами контролов:
+ *  1. OutlinedTextField — поле ввода
+ *  2. IconButton        — кнопка очистки (появляется, когда есть текст)
+ *  3. Button            — кнопка действия "Найти"
+ */
+@Composable
+fun SearchRowExample(modifier: Modifier = Modifier) {
+    var query by remember { mutableStateOf("") }
+    var lastSearch by remember { mutableStateOf("") }
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(
+            text = "Поиск: Row с TextField + IconButton + Button",
+            style = MaterialTheme.typography.titleMedium
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // --- 1. TextField ---
+            OutlinedTextField(
+                value = query,
+                onValueChange = { query = it },
+                modifier = Modifier.weight(1f),
+                label = { Text("Что найти?") },
+                singleLine = true,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Поиск"
+                    )
+                }
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            // --- 2. IconButton (очистка) ---
+            if (query.isNotEmpty()) {
+                IconButton(onClick = { query = "" }) {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = "Очистить",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+            }
+
+            // --- 3. Button ---
+            Button(
+                onClick = { lastSearch = query },
+                enabled = query.isNotBlank()
+            ) {
+                Text("Найти")
+            }
+        }
+
+        if (lastSearch.isNotEmpty()) {
+            Text(
+                text = "Вы искали: «$lastSearch»",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SearchRowExamplePreview() {
+    VikaRowTutorialTheme {
+        SearchRowExample()
+    }
+}</code></pre>
+</div>
+
+<h3>Ключевые моменты</h3>
+<ul>
+  <li><strong><code>Modifier.weight(1f)</code></strong> — TextField забирает всё свободное место, оставшееся после кнопок.</li>
+  <li><strong><code>verticalAlignment = Alignment.CenterVertically</code></strong> — без этого Button и TextField «разъедутся» по высоте.</li>
+  <li><strong>Условный IconButton</strong> — появляется только когда в поле есть текст.</li>
+  <li><strong>State Hoisting</strong> — состояние живёт в родителе, дети получают его через параметры.</li>
+</ul>
+
+<!-- ============================================================= -->
+<h2 id="step7">7. Решение ошибки Unresolved reference 'icons'</h2>
+
+<div class="callout warn">
+  <strong>⚠️ Симптом</strong>
+  Компилятор сообщает: <code>Unresolved reference 'icons'</code> или <code>Unresolved reference 'Icons'</code>.
+</div>
+
+<p><strong>Причина:</strong> начиная с Material 3 1.4.0 (в BOM 2026.02.01) встроенная зависимость <code>androidx.compose.material.icons</code> удалена. Нужно добавить её вручную.</p>
+
+<h3>Шаг 1. <code>gradle/libs.versions.toml</code></h3>
+<p>Добавьте в блок <code>[libraries]</code>:</p>
+
+<div class="code-block">
+  <div class="code-header"><span class="lang">toml</span><button class="copy-btn">Копировать</button></div>
+<pre><code>androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }</code></pre>
+</div>
+
+<h3>Шаг 2. <code>app/build.gradle.kts</code></h3>
+<p>Добавьте в блок <code>dependencies</code>:</p>
+
+<div class="code-block">
+  <div class="code-header"><span class="lang">kotlin</span><button class="copy-btn">Копировать</button></div>
+<pre><code>implementation(libs.androidx.compose.material.icons.extended)</code></pre>
+</div>
+
+<p>Полный блок dependencies:</p>
+
+<div class="code-block">
+  <div class="code-header"><span class="lang">kotlin</span><button class="copy-btn">Копировать</button></div>
+<pre><code>dependencies {
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.compose.material.icons.extended)
+    testImplementation(libs.junit)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.junit)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+}</code></pre>
+</div>
+
+<div class="callout tip">
+  <strong>💡 core vs extended</strong>
+  <code>material-icons-core</code> — ~30 базовых иконок. <code>material-icons-extended</code> — более 1000. Для обучения удобнее extended.
+</div>
+
+<p><strong>После изменений обязательно нажмите <code>Sync Now</code> в Android Studio.</strong></p>
+
+<!-- ============================================================= -->
+<h2 id="step8">8. Все сценарии использования Row</h2>
+
+<h3>8.1. Простое горизонтальное размещение</h3>
+<div class="code-block">
+  <div class="code-header"><span class="lang">kotlin</span><button class="copy-btn">Копировать</button></div>
+<pre><code>Row {
+    Text("Имя:")
+    Text(" Иван")
+    Text(" Возраст: 25")
+}</code></pre>
+</div>
+
+<h3>8.2. Равномерное распределение</h3>
+<p>Все варианты <code>horizontalArrangement</code>:</p>
+<table>
+  <tr><th>Значение</th><th>Поведение</th></tr>
+  <tr><td><code>Arrangement.Start</code></td><td>Прижаты к началу (по умолчанию)</td></tr>
+  <tr><td><code>Arrangement.Center</code></td><td>По центру</td></tr>
+  <tr><td><code>Arrangement.End</code></td><td>Прижаты к концу</td></tr>
+  <tr><td><code>Arrangement.SpaceBetween</code></td><td>Крайние по краям, равные промежутки между</td></tr>
+  <tr><td><code>Arrangement.SpaceAround</code></td><td>Равные промежутки вокруг каждого</td></tr>
+  <tr><td><code>Arrangement.SpaceEvenly</code></td><td>Равные промежутки везде</td></tr>
+</table>
+
+<div class="code-block">
+  <div class="code-header"><span class="lang">kotlin</span><button class="copy-btn">Копировать</button></div>
+<pre><code>Row(
+    modifier = Modifier.fillMaxWidth(),
+    horizontalArrangement = Arrangement.SpaceEvenly
+) {
+    Icon(Icons.Default.Home, contentDescription = null)
+    Icon(Icons.Default.Search, contentDescription = null)
+    Icon(Icons.Default.Settings, contentDescription = null)
+}</code></pre>
+</div>
+
+<h3>8.3. Пропорции через weight</h3>
+<div class="code-block">
+  <div class="code-header"><span class="lang">kotlin</span><button class="copy-btn">Копировать</button></div>
+<pre><code>Row(modifier = Modifier.fillMaxWidth()) {
+    Box(
+        modifier = Modifier
+            .weight(2f)
+            .height(40.dp)
+            .background(Color.Red)
+    )
+    Box(
+        modifier = Modifier
+            .weight(1f)
+            .height(40.dp)
+            .background(Color.Blue)
+    )
+}</code></pre>
+</div>
+
+<h3>8.4. Иконка + текст (вертикальное центрирование)</h3>
+<div class="code-block">
+  <div class="code-header"><span class="lang">kotlin</span><button class="copy-btn">Копировать</button></div>
+<pre><code>Row(
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = Modifier.padding(16.dp)
+) {
+    Icon(
+        Icons.Default.Person,
+        contentDescription = "Профиль",
+        modifier = Modifier.size(48.dp)
+    )
+    Spacer(modifier = Modifier.width(12.dp))
+    Column {
+        Text("Иван Петров", style = MaterialTheme.typography.titleMedium)
+        Text("Разработчик", style = MaterialTheme.typography.bodySmall)
+    }
+}</code></pre>
+</div>
+
+<h3>8.5. Горизонтальная прокрутка</h3>
+<div class="code-block">
+  <div class="code-header"><span class="lang">kotlin</span><button class="copy-btn">Копировать</button></div>
+<pre><code>Row(
+    modifier = Modifier
+        .horizontalScroll(rememberScrollState())
+        .padding(16.dp)
+) {
+    repeat(20) { index ->
+        Card(
+            modifier = Modifier
+                .width(120.dp)
+                .padding(end = 8.dp)
+        ) {
+            Text("Элемент $index", modifier = Modifier.padding(16.dp))
+        }
+    }
+}</code></pre>
+</div>
+
+<h3>8.6. LazyRow для больших списков</h3>
+<div class="code-block">
+  <div class="code-header"><span class="lang">kotlin</span><button class="copy-btn">Копировать</button></div>
+<pre><code>LazyRow(
+    contentPadding = PaddingValues(16.dp),
+    horizontalArrangement = Arrangement.spacedBy(8.dp)
+) {
+    items(100) { index ->
+        Card {
+            Text("Элемент $index", modifier = Modifier.padding(16.dp))
+        }
+    }
+}</code></pre>
+</div>
+
+<h3>8.7. Выравнивание по базовой линии</h3>
+<div class="code-block">
+  <div class="code-header"><span class="lang">kotlin</span><button class="copy-btn">Копировать</button></div>
+<pre><code>Row {
+    Text("Заголовок", modifier = Modifier.alignByBaseline())
+    Text(" (подпись)", modifier = Modifier.alignByBaseline())
+}</code></pre>
+</div>
+
+<h3>8.8. Row внутри Column (список задач)</h3>
+<div class="code-block">
+  <div class="code-header"><span class="lang">kotlin</span><button class="copy-btn">Копировать</button></div>
+<pre><code>Column(modifier = Modifier.padding(16.dp)) {
+    Text("Список задач", style = MaterialTheme.typography.headlineSmall)
+    Spacer(modifier = Modifier.height(16.dp))
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Checkbox(checked = false, onCheckedChange = {})
+        Spacer(modifier = Modifier.width(8.dp))
+        Text("Купить молоко", modifier = Modifier.weight(1f))
+        IconButton(onClick = {}) {
+            Icon(Icons.Default.Delete, contentDescription = "Удалить")
+        }
+    }
+}</code></pre>
+</div>
+
+<h3>8.9. FlowRow — перенос на новую строку</h3>
+<div class="code-block">
+  <div class="code-header"><span class="lang">kotlin</span><button class="copy-btn">Копировать</button></div>
+<pre><code>@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun TagFlow() {
+    FlowRow(
+        modifier = Modifier.padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        listOf("Kotlin", "Compose", "Android", "Material 3", "Room", "Retrofit")
+            .forEach { tag ->
+                AssistChip(onClick = {}, label = { Text(tag) })
+            }
+    }
+}</code></pre>
+</div>
+
+<h3>8.10. Row внутри TopAppBar</h3>
+<div class="code-block">
+  <div class="code-header"><span class="lang">kotlin</span><button class="copy-btn">Копировать</button></div>
+<pre><code>Scaffold(
+    topBar = {
+        TopAppBar(
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Apps, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Моё приложение")
+                }
+            },
+            actions = {
+                IconButton(onClick = {}) {
+                    Icon(Icons.Default.Search, contentDescription = "Поиск")
+                }
+                IconButton(onClick = {}) {
+                    Icon(Icons.Default.MoreVert, contentDescription = "Ещё")
+                }
+            }
+        )
+    }
+) { padding ->
+    // Содержимое экрана
+}</code></pre>
+</div>
+
+<!-- ============================================================= -->
+<h2 id="step9">9. Чек-лист и советы</h2>
+
+<ul class="checklist">
+  <li>Проект создан через шаблон <code>Empty Activity</code> на Kotlin</li>
+  <li>Compose подключён автоматически (проверьте <code>buildFeatures { compose = true }</code>)</li>
+  <li>Импортирован <code>androidx.compose.foundation.layout.Row</code></li>
+  <li>Для выравнивания используется <code>verticalAlignment = Alignment.CenterVertically</code></li>
+  <li>Для распределения — <code>horizontalArrangement = Arrangement.*</code></li>
+  <li>Для пропорций — <code>Modifier.weight(...)</code></li>
+  <li>Для промежутков — <code>Spacer(modifier = Modifier.width(...))</code></li>
+  <li>Иконки подключены через <code>material-icons-extended</code></li>
+  <li>После правки Gradle сделан <code>Sync Now</code></li>
+  <li>Используется <code>@Preview</code> для быстрой проверки вёрстки</li>
+</ul>
+
+<div class="callout tip">
+  <strong>💡 Совет</strong>
+  Всегда проверяйте вёрстку в <code>@Preview</code> с разными размерами экрана. Добавьте несколько Preview-функций с параметром <code>device = Devices.PIXEL_7</code> и <code>Devices.PIXEL_TABLET</code>, чтобы ловить проблемы адаптивности сразу.
+</div>
+
+<div class="callout warn">
+  <strong>⚠️ Частая ошибка новичков</strong>
+  Забывать про <code>verticalAlignment</code>, когда элементы разной высоты (например, <code>Button</code> и <code>OutlinedTextField</code>). Визуально выглядит «криво». Добавляйте <code>CenterVertically</code> — и Row сразу становится аккуратным.
+</div>
+
+<footer>
+  Составлено на основе обсуждения в чате · Jetpack Compose · Kotlin · Android Studio<br>
+  Версии: AGP 9.4.0 · Kotlin 2.2.10 · Compose BOM 2026.02.01
+</footer>
+
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.copy-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var block = btn.closest('.code-block');
+        var codeEl = block.querySelector('pre code');
+        if (!codeEl) return;
+        var text = codeEl.innerText;
+        var done = function () {
+          btn.textContent = 'Скопировано!';
+          btn.classList.add('copied');
+          setTimeout(function () {
+            btn.textContent = 'Копировать';
+            btn.classList.remove('copied');
+          }, 1500);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done).catch(function () {
+            fallbackCopy(text, done);
+          });
+        } else {
+          fallbackCopy(text, done);
+        }
+      });
+    });
+  });
+
+  function fallbackCopy(text, done) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) { alert('Не удалось скопировать'); }
+    document.body.removeChild(ta);
+  }
+</script>
+</body>
+</html>
